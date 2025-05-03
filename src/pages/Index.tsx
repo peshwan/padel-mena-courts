@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -7,7 +6,7 @@ import Hero from "@/components/Hero";
 import CourtCard from "@/components/CourtCard";
 import CoachCard from "@/components/CoachCard";
 import { Button } from "@/components/ui/button";
-import { TennisBall, Map, List } from "lucide-react";
+import { CircleDot, Map, List } from "lucide-react";
 
 import { courts } from "@/data/courtsData";
 import { coaches } from "@/data/coachesData";
