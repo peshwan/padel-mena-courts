@@ -4,7 +4,12 @@ import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const Navbar = () => {
+interface NavbarProps {
+  isArabic?: boolean;
+  onToggleLanguage?: () => void;
+}
+
+const Navbar = ({ isArabic = true, onToggleLanguage }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -33,18 +38,37 @@ const Navbar = () => {
                 <path d="M12 2a3.4 3.4 0 0 1 3 2 3.4 3.4 0 0 0 2 2 3.4 3.4 0 0 1 2 3 3.4 3.4 0 0 0 2 2 3.4 3.4 0 0 1 0 6 3.4 3.4 0 0 0-2 2 3.4 3.4 0 0 1-2 3 3.4 3.4 0 0 0-2 2 3.4 3.4 0 0 1-6 0 3.4 3.4 0 0 0-2-2 3.4 3.4 0 0 1-3-2 3.4 3.4 0 0 0-2-2 3.4 3.4 0 0 1 0-6 3.4 3.4 0 0 0 2-2 3.4 3.4 0 0 1 2-3 3.4 3.4 0 0 0 2-2 3.4 3.4 0 0 1 6 0Z" />
               </svg>
             </div>
-            <span className="font-bold text-xl bg-gradient-to-r from-teal to-court bg-clip-text text-transparent">MENA Padel</span>
+            <span className="font-bold text-xl bg-gradient-to-r from-teal to-court bg-clip-text text-transparent">
+              {isArabic ? "بادل الشرق الأوسط وشمال أفريقيا" : "MENA Padel"}
+            </span>
           </Link>
 
           <div className="hidden md:flex items-center space-x-6">
-            <Link to="/" className="text-gray-700 hover:text-court transition-colors font-medium">Home</Link>
-            <Link to="/courts" className="text-gray-700 hover:text-court transition-colors font-medium">Courts</Link>
-            <Link to="/coaches" className="text-gray-700 hover:text-court transition-colors font-medium">Coaches</Link>
-            <Link to="/about" className="text-gray-700 hover:text-court transition-colors font-medium">About Padel</Link>
+            <Link to="/" className="text-gray-700 hover:text-court transition-colors font-medium">
+              {isArabic ? "الرئيسية" : "Home"}
+            </Link>
+            <Link to="/courts" className="text-gray-700 hover:text-court transition-colors font-medium">
+              {isArabic ? "الملاعب" : "Courts"}
+            </Link>
+            <Link to="/coaches" className="text-gray-700 hover:text-court transition-colors font-medium">
+              {isArabic ? "المدربين" : "Coaches"}
+            </Link>
+            <Link to="/about" className="text-gray-700 hover:text-court transition-colors font-medium">
+              {isArabic ? "عن البادل" : "About Padel"}
+            </Link>
+            <Link to="/how-to-play" className="text-gray-700 hover:text-court transition-colors font-medium">
+              {isArabic ? "كيف تلعب" : "How to Play"}
+            </Link>
           </div>
 
-          <div className="hidden md:block">
-            <Button className="bg-court hover:bg-court-dark text-white">Book a Court</Button>
+          <div className="hidden md:flex items-center space-x-2">
+            <Button 
+              variant="outline" 
+              onClick={onToggleLanguage}
+              className="text-court border-court hover:bg-court hover:text-white"
+            >
+              {isArabic ? "English" : "العربية"}
+            </Button>
           </div>
 
           <div className="md:hidden">
@@ -63,31 +87,45 @@ const Navbar = () => {
                 className="text-gray-700 hover:text-court transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Home
+                {isArabic ? "الرئيسية" : "Home"}
               </Link>
               <Link 
                 to="/courts"
                 className="text-gray-700 hover:text-court transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Courts
+                {isArabic ? "الملاعب" : "Courts"}
               </Link>
               <Link 
                 to="/coaches"
                 className="text-gray-700 hover:text-court transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Coaches
+                {isArabic ? "المدربين" : "Coaches"}
               </Link>
               <Link 
                 to="/about"
                 className="text-gray-700 hover:text-court transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
-                About Padel
+                {isArabic ? "عن البادل" : "About Padel"}
               </Link>
-              <Button className="bg-court hover:bg-court-dark text-white w-full">
-                Book a Court
+              <Link 
+                to="/how-to-play"
+                className="text-gray-700 hover:text-court transition-colors font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {isArabic ? "كيف تلعب" : "How to Play"}
+              </Link>
+              <Button 
+                onClick={() => {
+                  if (onToggleLanguage) onToggleLanguage();
+                  setIsMenuOpen(false);
+                }}
+                variant="outline"
+                className="text-court border-court hover:bg-court hover:text-white w-full"
+              >
+                {isArabic ? "English" : "العربية"}
               </Button>
             </div>
           </div>

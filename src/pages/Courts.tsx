@@ -17,6 +17,7 @@ const Courts = () => {
   const [selectedCity, setSelectedCity] = useState<string>(searchParams.get("city") || "");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isArabic, setIsArabic] = useState<boolean>(true);
 
   useEffect(() => {
     applyFilters();
@@ -51,17 +52,23 @@ const Courts = () => {
     setIsFilterOpen(!isFilterOpen);
   };
 
+  const toggleLanguage = () => {
+    setIsArabic(!isArabic);
+  };
+
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar />
+    <div className="flex flex-col min-h-screen" dir={isArabic ? "rtl" : "ltr"}>
+      <Navbar isArabic={isArabic} onToggleLanguage={toggleLanguage} />
 
       <main className="flex-grow bg-gray-50 py-8">
         <div className="container-custom">
           {/* Page Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Padel Courts Directory</h1>
+            <h1 className="text-3xl font-bold mb-2">
+              {isArabic ? "دليل ملاعب البادل" : "Padel Courts Directory"}
+            </h1>
             <p className="text-muted-foreground">
-              Find and book padel courts across Middle East and North Africa.
+              {isArabic ? "ابحث عن ملاعب البادل في الشرق الأوسط وشمال أفريقيا." : "Find and book padel courts across Middle East and North Africa."}
             </p>
           </div>
 
@@ -73,7 +80,9 @@ const Courts = () => {
               className="w-full flex items-center justify-center"
             >
               <Filter className="mr-2 h-4 w-4" />
-              {isFilterOpen ? "Hide Filters" : "Show Filters"}
+              {isFilterOpen ? 
+                (isArabic ? "إخفاء الفلاتر" : "Hide Filters") : 
+                (isArabic ? "عرض الفلاتر" : "Show Filters")}
             </Button>
           </div>
 
@@ -86,6 +95,7 @@ const Courts = () => {
                 onCountryChange={handleCountryChange}
                 onCityChange={setSelectedCity}
                 onFilterApply={applyFilters}
+                isArabic={isArabic}
               />
             </div>
 
@@ -94,9 +104,19 @@ const Courts = () => {
               <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
                 <div className="flex justify-between items-center">
                   <p className="text-sm text-muted-foreground">
-                    Showing <span className="font-medium text-foreground">{filteredCourts.length}</span> courts
-                    {selectedCountry && ` in ${selectedCountry}`}
-                    {selectedCity && `, ${selectedCity}`}
+                    {isArabic ? (
+                      <>
+                        عرض <span className="font-medium text-foreground">{filteredCourts.length}</span> ملعب
+                        {selectedCountry && selectedCountry !== "all-countries" && ` في ${selectedCountry}`}
+                        {selectedCity && selectedCity !== "all-cities" && `، ${selectedCity}`}
+                      </>
+                    ) : (
+                      <>
+                        Showing <span className="font-medium text-foreground">{filteredCourts.length}</span> courts
+                        {selectedCountry && selectedCountry !== "all-countries" && ` in ${selectedCountry}`}
+                        {selectedCity && selectedCity !== "all-cities" && `, ${selectedCity}`}
+                      </>
+                    )}
                   </p>
                   <div className="flex space-x-2">
                     <Button
@@ -126,9 +146,11 @@ const Courts = () => {
                       <MapPin className="h-6 w-6 text-muted-foreground" />
                     </div>
                   </div>
-                  <h3 className="text-lg font-medium mb-2">No courts found</h3>
+                  <h3 className="text-lg font-medium mb-2">
+                    {isArabic ? "لم يتم العثور على ملاعب" : "No courts found"}
+                  </h3>
                   <p className="text-muted-foreground mb-4">
-                    Try changing your filter options to find more courts.
+                    {isArabic ? "حاول تغيير خيارات التصفية للعثور على المزيد من الملاعب." : "Try changing your filter options to find more courts."}
                   </p>
                   <Button onClick={() => {
                     setSelectedCountry("");
@@ -136,14 +158,14 @@ const Courts = () => {
                     setSearchParams({});
                     setFilteredCourts(courts);
                   }}>
-                    Reset Filters
+                    {isArabic ? "إعادة ضبط الفلاتر" : "Reset Filters"}
                   </Button>
                 </div>
               ) : (
                 view === "grid" ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredCourts.map((court) => (
-                      <CourtCard key={court.id} court={court} />
+                      <CourtCard key={court.id} court={court} isArabic={isArabic} />
                     ))}
                   </div>
                 ) : (
@@ -170,12 +192,20 @@ const Courts = () => {
                             </div>
                             <div className="flex items-center text-muted-foreground mb-2">
                               <MapPin className="h-4 w-4 mr-1" />
-                              <span>{court.city}, {court.country}</span>
+                              <span>
+                                {isArabic ? `${court.country}، ${court.city}` : `${court.city}, ${court.country}`}
+                              </span>
                             </div>
                             <p className="text-sm mb-4 line-clamp-2">{court.description}</p>
                             <div className="flex flex-wrap gap-1 mb-3">
-                              <span className="bg-sand/10 px-2 py-1 rounded-full text-xs">{court.numberOfCourts} Courts</span>
-                              <span className="bg-teal/10 px-2 py-1 rounded-full text-xs">{court.indoor ? 'Indoor' : 'Outdoor'}</span>
+                              <span className="bg-sand/10 px-2 py-1 rounded-full text-xs">
+                                {isArabic ? `${court.numberOfCourts} ملعب` : `${court.numberOfCourts} Courts`}
+                              </span>
+                              <span className="bg-teal/10 px-2 py-1 rounded-full text-xs">
+                                {court.indoor ? 
+                                  (isArabic ? 'داخلي' : 'Indoor') : 
+                                  (isArabic ? 'خارجي' : 'Outdoor')}
+                              </span>
                               {court.amenities.slice(0, 2).map((amenity, idx) => (
                                 <span key={idx} className="bg-court/10 px-2 py-1 rounded-full text-xs">{amenity}</span>
                               ))}
@@ -183,9 +213,14 @@ const Courts = () => {
                           </div>
                           <div className="flex justify-between items-center mt-2">
                             <p className="font-medium">
-                              <span className="text-court">${court.pricePerHour}</span> / hour
+                              <span className="text-court">${court.pricePerHour}</span> {isArabic ? "/ ساعة" : "/ hour"}
                             </p>
-                            <Button className="bg-court hover:bg-court-dark">Book Now</Button>
+                            <Button 
+                              className="bg-court hover:bg-court-dark"
+                              onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(court.address + ', ' + court.city + ', ' + court.country)}`, '_blank')}
+                            >
+                              {isArabic ? "عرض على الخريطة" : "View on Map"}
+                            </Button>
                           </div>
                         </div>
                       </div>
@@ -198,7 +233,7 @@ const Courts = () => {
         </div>
       </main>
 
-      <Footer />
+      <Footer isArabic={isArabic} />
     </div>
   );
 };
