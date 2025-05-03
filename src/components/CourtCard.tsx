@@ -1,8 +1,7 @@
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, Star } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { MapPin, Phone, Clock } from "lucide-react";
 import { PadelCourt } from "@/types";
 
 interface CourtCardProps {
@@ -20,37 +19,38 @@ const CourtCard = ({ court }: CourtCardProps) => {
         />
       </div>
       <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <CardTitle className="text-xl">{court.name}</CardTitle>
-          <div className="flex items-center bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-sm">
-            <Star className="h-4 w-4 fill-amber-500 stroke-amber-500 mr-1" />
-            <span className="font-medium">{court.rating}</span>
-          </div>
-        </div>
+        <CardTitle className="text-xl">{court.name}</CardTitle>
         <div className="flex items-center text-muted-foreground">
           <MapPin className="h-4 w-4 mr-1" />
-          <CardDescription>{court.city}, {court.country}</CardDescription>
+          <span>{court.city}, {court.country}</span>
         </div>
       </CardHeader>
-      <CardContent className="pb-2">
-        <p className="text-sm line-clamp-2 mb-3">{court.description}</p>
-        <div className="flex flex-wrap gap-1 mb-3">
-          <Badge variant="outline" className="bg-sand/10">{court.numberOfCourts} Courts</Badge>
-          <Badge variant="outline" className="bg-teal/10">{court.indoor ? 'Indoor' : 'Outdoor'}</Badge>
-          {court.amenities.slice(0, 2).map((amenity, idx) => (
-            <Badge key={idx} variant="outline" className="bg-court/10">{amenity}</Badge>
-          ))}
-          {court.amenities.length > 2 && (
-            <Badge variant="outline" className="bg-gray-100">+{court.amenities.length - 2}</Badge>
-          )}
+      <CardContent className="space-y-3">
+        <div className="flex items-start gap-2">
+          <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground" />
+          <span className="text-sm">{court.address}</span>
         </div>
-        <p className="text-sm font-medium">
-          <span className="text-court">${court.pricePerHour}</span> / hour
-        </p>
+        
+        <div className="flex items-start gap-2">
+          <Phone className="h-4 w-4 mt-0.5 text-muted-foreground" />
+          <span className="text-sm">{court.contactPhone}</span>
+        </div>
+        
+        <div className="flex items-start gap-2">
+          <Clock className="h-4 w-4 mt-0.5 text-muted-foreground" />
+          <div className="text-sm">
+            <div>Weekdays: {court.openingHours.weekdays}</div>
+            <div>Weekends: {court.openingHours.weekends}</div>
+          </div>
+        </div>
+
+        <Button 
+          className="w-full bg-court hover:bg-court-dark mt-2"
+          onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(court.address + ', ' + court.city + ', ' + court.country)}`, '_blank')}
+        >
+          <MapPin className="h-4 w-4 mr-2" /> View on Map
+        </Button>
       </CardContent>
-      <CardFooter>
-        <Button className="w-full bg-court hover:bg-court-dark">Book Court</Button>
-      </CardFooter>
     </Card>
   );
 };
