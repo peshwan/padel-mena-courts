@@ -69,7 +69,7 @@ const Coaches = () => {
         </div>
       </main>
 
-      <Footer isArabic={isArabic} />
+      <Footer />
     </div>
   );
 };
