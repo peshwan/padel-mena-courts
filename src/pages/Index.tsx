@@ -7,7 +7,7 @@ import Hero from "@/components/Hero";
 import CourtCard from "@/components/CourtCard";
 import CoachCard from "@/components/CoachCard";
 import { Button } from "@/components/ui/button";
-import { tennis-ball as TennisBall, Map, List } from "lucide-react";
+import { TennisBall, Map, List } from "lucide-react";
 
 import { courts } from "@/data/courtsData";
 import { coaches } from "@/data/coachesData";
