@@ -3,13 +3,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/context/LanguageContext";
 
-interface NavbarProps {
-  isArabic?: boolean;
-  onToggleLanguage?: () => void;
-}
-
-const Navbar = ({ isArabic = true, onToggleLanguage }: NavbarProps) => {
+const Navbar = () => {
+  const { isArabic, toggleLanguage } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -64,7 +61,7 @@ const Navbar = ({ isArabic = true, onToggleLanguage }: NavbarProps) => {
           <div className="hidden md:flex items-center space-x-2">
             <Button 
               variant="outline" 
-              onClick={onToggleLanguage}
+              onClick={toggleLanguage}
               className="text-court border-court hover:bg-court hover:text-white"
             >
               {isArabic ? "English" : "العربية"}
@@ -119,7 +116,7 @@ const Navbar = ({ isArabic = true, onToggleLanguage }: NavbarProps) => {
               </Link>
               <Button 
                 onClick={() => {
-                  if (onToggleLanguage) onToggleLanguage();
+                  toggleLanguage();
                   setIsMenuOpen(false);
                 }}
                 variant="outline"
