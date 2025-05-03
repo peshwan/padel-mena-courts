@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,28 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Custom colors for MENA Padel Courts
+				sand: {
+					DEFAULT: '#D4B483',
+					light: '#E6D2B2',
+					dark: '#C19A5B',
+				},
+				teal: {
+					DEFAULT: '#3A7D7D',
+					light: '#4A9D9D',
+					dark: '#2A5D5D',
+				},
+				court: {
+					DEFAULT: '#4CAF50',
+					light: '#6BC86F',
+					dark: '#3E8E41',
+				},
+				desert: {
+					DEFAULT: '#F2DCA6',
+					light: '#F8EACF',
+					dark: '#E6C37D',
+				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +106,23 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'bounce-slow': {
+					'0%, 100%': {
+						transform: 'translateY(0)',
+					},
+					'50%': {
+						transform: 'translateY(-10px)',
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'bounce-slow': 'bounce-slow 3s infinite ease-in-out'
+			},
+			backgroundImage: {
+				'hero-pattern': "url('/src/assets/padel-hero.jpg')",
 			}
 		}
 	},
