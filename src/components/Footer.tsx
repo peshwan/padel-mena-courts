@@ -1,11 +1,10 @@
 
 import { Link } from "react-router-dom";
+import { useLanguage } from "@/context/LanguageContext";
 
-interface FooterProps {
-  isArabic?: boolean;
-}
-
-const Footer = ({ isArabic = true }: FooterProps) => {
+const Footer = () => {
+  const { isArabic } = useLanguage();
+  
   return (
     <footer className="bg-gray-900 text-white py-8">
       <div className="container-custom">

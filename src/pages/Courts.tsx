@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -9,15 +8,16 @@ import { Button } from "@/components/ui/button";
 import { MapPin, List, Filter } from "lucide-react";
 import { courts } from "@/data/courtsData";
 import { PadelCourt } from "@/types";
+import { useLanguage } from "@/context/LanguageContext";
 
 const Courts = () => {
+  const { isArabic } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
   const [filteredCourts, setFilteredCourts] = useState<PadelCourt[]>(courts);
   const [selectedCountry, setSelectedCountry] = useState<string>(searchParams.get("country") || "");
   const [selectedCity, setSelectedCity] = useState<string>(searchParams.get("city") || "");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isArabic, setIsArabic] = useState<boolean>(true);
 
   useEffect(() => {
     applyFilters();
@@ -52,13 +52,9 @@ const Courts = () => {
     setIsFilterOpen(!isFilterOpen);
   };
 
-  const toggleLanguage = () => {
-    setIsArabic(!isArabic);
-  };
-
   return (
     <div className="flex flex-col min-h-screen" dir={isArabic ? "rtl" : "ltr"}>
-      <Navbar isArabic={isArabic} onToggleLanguage={toggleLanguage} />
+      <Navbar />
 
       <main className="flex-grow bg-gray-50 py-8">
         <div className="container-custom">
@@ -233,7 +229,7 @@ const Courts = () => {
         </div>
       </main>
 
-      <Footer isArabic={isArabic} />
+      <Footer />
     </div>
   );
 };

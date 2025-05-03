@@ -1,21 +1,17 @@
-
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLanguage } from "@/context/LanguageContext";
 
 const HowToPlay = () => {
-  const [isArabic, setIsArabic] = useState(true);
-
-  const toggleLanguage = () => {
-    setIsArabic(!isArabic);
-  };
+  const { isArabic } = useLanguage();
 
   return (
     <div className="flex flex-col min-h-screen" dir={isArabic ? "rtl" : "ltr"}>
-      <Navbar isArabic={isArabic} onToggleLanguage={toggleLanguage} />
+      <Navbar />
 
       <main className="flex-grow py-12">
         <div className="container-custom">
@@ -554,7 +550,7 @@ const HowToPlay = () => {
         </div>
       </main>
 
-      <Footer isArabic={isArabic} />
+      <Footer />
     </div>
   );
 };
