@@ -64,7 +64,7 @@ const LocationFilter = ({
                 <SelectValue placeholder="Select a country" />
               </SelectTrigger>
               <SelectContent className="bg-white">
-                <SelectItem value="">All Countries</SelectItem>
+                <SelectItem value="all-countries">All Countries</SelectItem>
                 {countries.map((country) => (
                   <SelectItem key={country} value={country}>
                     {country}
@@ -81,7 +81,7 @@ const LocationFilter = ({
                 <SelectValue placeholder={selectedCountry ? "Select a city" : "Select country first"} />
               </SelectTrigger>
               <SelectContent className="bg-white">
-                <SelectItem value="">All Cities</SelectItem>
+                <SelectItem value="all-cities">All Cities</SelectItem>
                 {cities.map((city) => (
                   <SelectItem key={city} value={city}>
                     {city}

@@ -25,11 +25,11 @@ const Courts = () => {
   const applyFilters = () => {
     let filtered = [...courts];
     
-    if (selectedCountry) {
+    if (selectedCountry && selectedCountry !== "all-countries") {
       filtered = filtered.filter((court) => court.country === selectedCountry);
     }
     
-    if (selectedCity) {
+    if (selectedCity && selectedCity !== "all-cities") {
       filtered = filtered.filter((court) => court.city === selectedCity);
     }
     
@@ -37,8 +37,8 @@ const Courts = () => {
     
     // Update URL params
     const params = new URLSearchParams();
-    if (selectedCountry) params.set("country", selectedCountry);
-    if (selectedCity) params.set("city", selectedCity);
+    if (selectedCountry && selectedCountry !== "all-countries") params.set("country", selectedCountry);
+    if (selectedCity && selectedCity !== "all-cities") params.set("city", selectedCity);
     setSearchParams(params);
   };
 
