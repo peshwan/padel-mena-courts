@@ -9,6 +9,7 @@ type LanguageContextType = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // Set default language to Arabic (true)
   const [isArabic, setIsArabic] = useState<boolean>(true);
 
   const toggleLanguage = () => {
