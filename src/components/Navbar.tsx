@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, MapPin } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -48,10 +48,6 @@ const Navbar = () => {
               <Link to="/courts" className="text-gray-700 hover:text-court transition-colors font-medium px-2">
                 {isArabic ? "الملاعب" : "Courts"}
               </Link>
-              <Link to="/courts-near-me" className="text-gray-700 hover:text-court transition-colors font-medium px-2 flex items-center">
-                <MapPin size={16} className="mr-1" />
-                {isArabic ? "الملاعب القريبة" : "Courts Near Me"}
-              </Link>
               <Link to="/coaches" className="text-gray-700 hover:text-court transition-colors font-medium px-2">
                 {isArabic ? "المدربين" : "Coaches"}
               </Link>
@@ -96,14 +92,6 @@ const Navbar = () => {
                 onClick={() => setIsMenuOpen(false)}
               >
                 {isArabic ? "الملاعب" : "Courts"}
-              </Link>
-              <Link 
-                to="/courts-near-me" 
-                className="text-gray-700 hover:text-court transition-colors font-medium flex items-center"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <MapPin size={16} className="mr-1" />
-                {isArabic ? "الملاعب القريبة" : "Courts Near Me"}
               </Link>
               <Link 
                 to="/coaches"
