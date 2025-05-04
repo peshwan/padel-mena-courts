@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import { MapPin, Star, Clock } from "lucide-react";
+import { MapPin, Star, Clock, Phone, Globe } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,10 @@ interface CourtCardProps {
 
 const CourtCard = ({ court }: CourtCardProps) => {
   const { isArabic } = useLanguage();
+  
+  const handleMapView = () => {
+    window.open(`https://maps.google.com/?q=${encodeURIComponent(court.location.address + ', ' + court.location.city + ', ' + court.location.country)}`, '_blank');
+  };
   
   return (
     <Card className="overflow-hidden h-full flex flex-col">
@@ -47,25 +51,46 @@ const CourtCard = ({ court }: CourtCardProps) => {
               </span>
             )}
           </div>
-          <div className="flex items-center text-muted-foreground mb-3">
+          <div className="flex items-center text-muted-foreground mb-2">
             <Star size={16} className="mr-1 text-yellow-500" />
             <span className="text-sm">{court.rating} ({court.reviews} {isArabic ? "تقييم" : "reviews"})</span>
-            
-            <Clock size={16} className="ml-3 mr-1" />
+          </div>
+          <div className="flex items-center text-muted-foreground mb-2">
+            <Clock size={16} className="mr-1" />
             <span className="text-sm">
               {isArabic ? `${court.hours.openAr} - ${court.hours.closeAr}` : `${court.hours.open} - ${court.hours.close}`}
             </span>
           </div>
+          {court.phone && (
+            <div className="flex items-center text-muted-foreground mb-2">
+              <Phone size={16} className="mr-1" />
+              <span className="text-sm">{court.phone}</span>
+            </div>
+          )}
+          {court.website && (
+            <div className="flex items-center text-muted-foreground mb-3">
+              <Globe size={16} className="mr-1" />
+              <a 
+                href={court.website} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-sm text-blue-500 hover:underline truncate"
+              >
+                {court.website.replace(/^https?:\/\//, '')}
+              </a>
+            </div>
+          )}
           <p className="text-sm text-muted-foreground line-clamp-2">
             {isArabic ? court.descriptionAr : court.description}
           </p>
         </div>
         <div className="mt-auto pt-3 border-t">
-          <Link to={`/courts/${court.id}`}>
-            <Button className="w-full bg-court hover:bg-court/90">
-              {isArabic ? "احجز الآن" : "Book Now"}
-            </Button>
-          </Link>
+          <Button 
+            className="w-full bg-court hover:bg-court/90"
+            onClick={handleMapView}
+          >
+            {isArabic ? "عرض على الخريطة" : "View in Map"}
+          </Button>
         </div>
       </CardContent>
     </Card>
