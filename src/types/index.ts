@@ -1,4 +1,5 @@
 
+
 export type Country = 
   | 'Saudi Arabia' 
   | 'UAE' 
@@ -89,6 +90,8 @@ export interface Coach {
   pricePerHour?: number;
   contactPhone?: string;
   contactEmail?: string;
+  languages?: string[];
+  instagram?: string;
 }
 
 // Utility function to convert PadelCourt to Court
