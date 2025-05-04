@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -5,21 +6,23 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLanguage } from "@/context/LanguageContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const HowToPlay = () => {
   const { isArabic } = useLanguage();
+  const isMobile = useIsMobile();
 
   return (
     <div className="flex flex-col min-h-screen" dir={isArabic ? "rtl" : "ltr"}>
       <Navbar />
 
-      <main className="flex-grow py-12">
-        <div className="container-custom">
-          <div className="mb-12 text-center">
-            <h1 className="text-4xl font-bold mb-4">
+      <main className="flex-grow py-8 md:py-12">
+        <div className={`container-custom ${isMobile ? 'px-4' : ''}`}>
+          <div className="mb-8 md:mb-12 text-center">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">
               {isArabic ? "كيف تلعب البادل" : "How to Play Padel"}
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
               {isArabic 
                 ? "دليل شامل للمبتدئين لتعلم لعبة البادل الممتعة والمثيرة." 
                 : "A comprehensive beginner's guide to learn this exciting and engaging sport."}
@@ -27,7 +30,7 @@ const HowToPlay = () => {
           </div>
 
           <Tabs defaultValue="basics" className="mb-12">
-            <TabsList className="grid grid-cols-1 md:grid-cols-4 h-auto p-1">
+            <TabsList className={`grid grid-cols-2 md:grid-cols-4 h-auto p-1 ${isMobile ? 'gap-1' : ''}`}>
               <TabsTrigger value="basics">
                 {isArabic ? "أساسيات اللعبة" : "Game Basics"}
               </TabsTrigger>

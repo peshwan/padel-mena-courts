@@ -1,39 +1,34 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { LanguageProvider } from "./context/LanguageContext";
+import { Route, Routes } from 'react-router-dom';
+import Index from './pages/Index';
+import About from './pages/About';
+import Coaches from './pages/Coaches';
+import Courts from './pages/Courts';
+import HowToPlay from './pages/HowToPlay';
+import NotFound from './pages/NotFound';
+import CourtsNearMe from './pages/CourtsNearMe';
+import { LanguageProvider } from './context/LanguageContext';
+import { Toaster } from './components/ui/toaster';
 
-import Index from "./pages/Index";
-import Courts from "./pages/Courts";
-import Coaches from "./pages/Coaches";
-import About from "./pages/About";
-import HowToPlay from "./pages/HowToPlay";
-import NotFound from "./pages/NotFound";
+import './App.css';
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+function App() {
+  return (
+    <>
       <LanguageProvider>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/coaches" element={<Coaches />} />
+          <Route path="/courts" element={<Courts />} />
+          <Route path="/courts-near-me" element={<CourtsNearMe />} />
+          <Route path="/how-to-play" element={<HowToPlay />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
         <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/courts" element={<Courts />} />
-            <Route path="/coaches" element={<Coaches />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/how-to-play" element={<HowToPlay />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
       </LanguageProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+    </>
+  );
+}
 
 export default App;

@@ -1,70 +1,72 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "react-router-dom";
+import { MapPin, Star, Clock } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Phone, Clock, Link } from "lucide-react";
-import { PadelCourt } from "@/types";
+import { Court } from "@/types";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface CourtCardProps {
-  court: PadelCourt;
-  isArabic?: boolean;
+  court: Court & {
+    distance?: number;
+  };
 }
 
-const CourtCard = ({ court, isArabic = true }: CourtCardProps) => {
-  const openMapLocation = () => {
-    window.open(`https://maps.google.com/?q=${encodeURIComponent(court.address + ', ' + court.city + ', ' + court.country)}`, '_blank');
-  };
+const CourtCard = ({ court }: CourtCardProps) => {
+  const { isArabic } = useLanguage();
   
   return (
-    <Card className="overflow-hidden transition-all hover:shadow-lg">
-      <div className="aspect-[16/9] overflow-hidden">
+    <Card className="overflow-hidden h-full flex flex-col">
+      <div className="relative h-48">
         <img
-          src={court.image}
+          src={court.images[0]}
           alt={court.name}
-          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+          className="w-full h-full object-cover"
         />
+        <div className="absolute top-2 right-2">
+          <Badge className="bg-court text-white">{isArabic ? court.typeAr : court.type}</Badge>
+        </div>
       </div>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-xl">{court.name}</CardTitle>
-        <div className="flex items-center text-muted-foreground">
-          <MapPin className="h-4 w-4 mr-1" />
-          <span>{isArabic ? `${court.country}، ${court.city}` : `${court.city}, ${court.country}`}</span>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="flex items-start gap-2">
-          <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground" />
-          <span className="text-sm">{court.address}</span>
-        </div>
-        
-        <div className="flex items-start gap-2">
-          <Phone className="h-4 w-4 mt-0.5 text-muted-foreground" />
-          <span className="text-sm">{court.contactPhone}</span>
-        </div>
-
-        {court.website && (
-          <div className="flex items-start gap-2">
-            <Link className="h-4 w-4 mt-0.5 text-muted-foreground" />
-            <a href={court.website} target="_blank" rel="noopener noreferrer" className="text-sm text-court hover:underline">
-              {isArabic ? "الموقع الإلكتروني" : "Website"}
-            </a>
+      <CardContent className="p-4 flex-grow flex flex-col">
+        <div className="mb-4 flex-grow">
+          <h3 className="font-bold text-lg mb-1">{isArabic ? court.nameAr : court.name}</h3>
+          <div className="flex items-center text-muted-foreground mb-2">
+            <MapPin size={16} className="mr-1" />
+            <span className="text-sm">{isArabic ? court.locationAr : court.location.city}</span>
+            
+            {court.distance !== undefined && (
+              <span className="text-sm ml-auto font-medium text-court">
+                {court.distance < 1 
+                  ? isArabic 
+                    ? `${Math.round(court.distance * 1000)} متر` 
+                    : `${Math.round(court.distance * 1000)} m` 
+                  : isArabic 
+                    ? `${court.distance.toFixed(1)} كم` 
+                    : `${court.distance.toFixed(1)} km`}
+              </span>
+            )}
           </div>
-        )}
-        
-        <div className="flex items-start gap-2">
-          <Clock className="h-4 w-4 mt-0.5 text-muted-foreground" />
-          <div className="text-sm">
-            <div>{isArabic ? "أيام الأسبوع:" : "Weekdays:"} {court.openingHours.weekdays}</div>
-            <div>{isArabic ? "عطلة نهاية الأسبوع:" : "Weekends:"} {court.openingHours.weekends}</div>
+          <div className="flex items-center text-muted-foreground mb-3">
+            <Star size={16} className="mr-1 text-yellow-500" />
+            <span className="text-sm">{court.rating} ({court.reviews} {isArabic ? "تقييم" : "reviews"})</span>
+            
+            <Clock size={16} className="ml-3 mr-1" />
+            <span className="text-sm">
+              {isArabic ? `${court.hours.openAr} - ${court.hours.closeAr}` : `${court.hours.open} - ${court.hours.close}`}
+            </span>
           </div>
+          <p className="text-sm text-muted-foreground line-clamp-2">
+            {isArabic ? court.descriptionAr : court.description}
+          </p>
         </div>
-
-        <Button 
-          className="w-full bg-court hover:bg-court-dark mt-2"
-          onClick={openMapLocation}
-        >
-          <MapPin className="h-4 w-4 mr-2" /> 
-          {isArabic ? "عرض على الخريطة" : "View on Map"}
-        </Button>
+        <div className="mt-auto pt-3 border-t">
+          <Link to={`/courts/${court.id}`}>
+            <Button className="w-full bg-court hover:bg-court/90">
+              {isArabic ? "احجز الآن" : "Book Now"}
+            </Button>
+          </Link>
+        </div>
       </CardContent>
     </Card>
   );

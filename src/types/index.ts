@@ -1,4 +1,3 @@
-
 export type Country = 
   | 'Saudi Arabia' 
   | 'UAE' 
@@ -51,4 +50,42 @@ export interface Coach {
   contactEmail: string;
   instagram?: string;
   availableForPrivateLessons: boolean;
+}
+
+export interface Court {
+  id: string;
+  name: string;
+  nameAr: string;
+  type: string;
+  typeAr: string;
+  location: {
+    city: string;
+    country: string;
+    lat?: number;
+    lng?: number;
+  };
+  locationAr: string;
+  description: string;
+  descriptionAr: string;
+  rating: number;
+  reviews: number;
+  price: {
+    hour: number;
+    currency: string;
+  };
+  amenities: string[];
+  amenitiesAr?: string[];
+  images: string[];
+  hours: {
+    open: string;
+    close: string;
+    openAr: string;
+    closeAr: string;
+  };
+  contact: {
+    phone: string;
+    email: string;
+    website?: string;
+  };
+  distance?: number;
 }

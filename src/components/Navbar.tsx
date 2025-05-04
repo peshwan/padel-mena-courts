@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -40,29 +40,33 @@ const Navbar = () => {
             </span>
           </Link>
 
-          <div className="hidden md:flex items-center space-x-6">
-            <Link to="/" className="text-gray-700 hover:text-court transition-colors font-medium">
-              {isArabic ? "الرئيسية" : "Home"}
-            </Link>
-            <Link to="/courts" className="text-gray-700 hover:text-court transition-colors font-medium">
-              {isArabic ? "الملاعب" : "Courts"}
-            </Link>
-            <Link to="/coaches" className="text-gray-700 hover:text-court transition-colors font-medium">
-              {isArabic ? "المدربين" : "Coaches"}
-            </Link>
-            <Link to="/about" className="text-gray-700 hover:text-court transition-colors font-medium">
-              {isArabic ? "عن البادل" : "About Padel"}
-            </Link>
-            <Link to="/how-to-play" className="text-gray-700 hover:text-court transition-colors font-medium">
-              {isArabic ? "كيف تلعب" : "How to Play"}
-            </Link>
-          </div>
+          <div className="hidden md:flex items-center">
+            <div className="flex items-center space-x-6 mx-4">
+              <Link to="/" className="text-gray-700 hover:text-court transition-colors font-medium px-2">
+                {isArabic ? "الرئيسية" : "Home"}
+              </Link>
+              <Link to="/courts" className="text-gray-700 hover:text-court transition-colors font-medium px-2">
+                {isArabic ? "الملاعب" : "Courts"}
+              </Link>
+              <Link to="/courts-near-me" className="text-gray-700 hover:text-court transition-colors font-medium px-2 flex items-center">
+                <MapPin size={16} className="mr-1" />
+                {isArabic ? "الملاعب القريبة" : "Courts Near Me"}
+              </Link>
+              <Link to="/coaches" className="text-gray-700 hover:text-court transition-colors font-medium px-2">
+                {isArabic ? "المدربين" : "Coaches"}
+              </Link>
+              <Link to="/about" className="text-gray-700 hover:text-court transition-colors font-medium px-2">
+                {isArabic ? "عن البادل" : "About Padel"}
+              </Link>
+              <Link to="/how-to-play" className="text-gray-700 hover:text-court transition-colors font-medium px-2">
+                {isArabic ? "كيف تلعب" : "How to Play"}
+              </Link>
+            </div>
 
-          <div className="hidden md:flex items-center space-x-2">
             <Button 
               variant="outline" 
               onClick={toggleLanguage}
-              className="text-court border-court hover:bg-court hover:text-white"
+              className="text-court border-court hover:bg-court hover:text-white ml-4"
             >
               {isArabic ? "English" : "العربية"}
             </Button>
@@ -92,6 +96,14 @@ const Navbar = () => {
                 onClick={() => setIsMenuOpen(false)}
               >
                 {isArabic ? "الملاعب" : "Courts"}
+              </Link>
+              <Link 
+                to="/courts-near-me" 
+                className="text-gray-700 hover:text-court transition-colors font-medium flex items-center"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <MapPin size={16} className="mr-1" />
+                {isArabic ? "الملاعب القريبة" : "Courts Near Me"}
               </Link>
               <Link 
                 to="/coaches"
