@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/context/LanguageContext";
@@ -12,6 +11,7 @@ import { CircleDot, Map, List } from "lucide-react";
 
 import { courts } from "@/data/courtsData";
 import { coaches } from "@/data/coachesData";
+import { convertPadelCourtToCourt } from "@/types";
 
 const Index = () => {
   const { isArabic } = useLanguage();
@@ -47,7 +47,7 @@ const Index = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredCourts.map((court) => (
-                <CourtCard key={court.id} court={court} />
+                <CourtCard key={court.id} court={convertPadelCourtToCourt(court)} />
               ))}
             </div>
           </div>

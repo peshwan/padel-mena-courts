@@ -1,3 +1,4 @@
+
 export type Country = 
   | 'Saudi Arabia' 
   | 'UAE' 
@@ -33,23 +34,6 @@ export interface PadelCourt {
     weekdays: string;
     weekends: string;
   };
-}
-
-export interface Coach {
-  id: string;
-  name: string;
-  image: string;
-  country: Country;
-  city: string;
-  experience: number;
-  specialties: string[];
-  languages: string[];
-  rating: number;
-  bio: string;
-  contactPhone: string;
-  contactEmail: string;
-  instagram?: string;
-  availableForPrivateLessons: boolean;
 }
 
 export interface Court {
@@ -88,4 +72,48 @@ export interface Court {
     website?: string;
   };
   distance?: number;
+}
+
+// Utility function to convert PadelCourt to Court
+export function convertPadelCourtToCourt(padelCourt: PadelCourt, distance?: number): Court {
+  // Extract hour from weekdays opening hours (e.g. "8:00 AM - 11:00 PM" -> "8:00 AM")
+  const openHour = padelCourt.openingHours.weekdays.split(' - ')[0] || '';
+  const closeHour = padelCourt.openingHours.weekdays.split(' - ')[1] || '';
+  
+  return {
+    id: padelCourt.id,
+    name: padelCourt.name,
+    nameAr: padelCourt.name, // Default to English name
+    type: padelCourt.indoor ? 'Indoor' : 'Outdoor',
+    typeAr: padelCourt.indoor ? 'داخلي' : 'خارجي',
+    location: {
+      city: padelCourt.city,
+      country: padelCourt.country,
+      lat: 0, // Default values since PadelCourt doesn't have coordinates
+      lng: 0,
+    },
+    locationAr: `${padelCourt.city}، ${padelCourt.country}`,
+    description: padelCourt.description,
+    descriptionAr: padelCourt.description, // Default to English description
+    rating: padelCourt.rating,
+    reviews: Math.floor(padelCourt.rating * 10), // Generate a fake number of reviews based on rating
+    price: {
+      hour: padelCourt.pricePerHour,
+      currency: 'USD',
+    },
+    amenities: padelCourt.amenities,
+    images: [padelCourt.image],
+    hours: {
+      open: openHour,
+      close: closeHour,
+      openAr: openHour,
+      closeAr: closeHour,
+    },
+    contact: {
+      phone: padelCourt.contactPhone,
+      email: padelCourt.contactEmail,
+      website: padelCourt.website,
+    },
+    distance: distance,
+  };
 }

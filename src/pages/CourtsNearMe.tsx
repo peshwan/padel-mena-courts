@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -8,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { courts } from "@/data/courtsData";
 import CourtCard from "@/components/CourtCard";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { convertPadelCourtToCourt } from "@/types";
 
 const CourtsNearMe = () => {
   const { isArabic } = useLanguage();
@@ -58,10 +58,9 @@ const CourtsNearMe = () => {
   useEffect(() => {
     if (userLocation) {
       const courtsWithDistance = courts.map(court => {
-        // Assign random coordinates for demonstration purposes
-        // In a real app, these would come from your database
-        const courtLat = court.location.lat || (Math.random() * 10) + 25; // Random coordinates for Middle East
-        const courtLng = court.location.lng || (Math.random() * 20) + 35;
+        // Create random coordinates for demonstration purposes
+        const courtLat = Math.random() * 10 + 25; // Random coordinates for Middle East
+        const courtLng = Math.random() * 20 + 35;
         
         const distance = calculateDistance(
           userLocation.latitude,
@@ -136,10 +135,7 @@ const CourtsNearMe = () => {
             {(status === "success" ? nearbyCourts : sortedCourts).map((court) => (
               <CourtCard 
                 key={court.id} 
-                court={{
-                  ...court,
-                  distance: court.distance
-                }}
+                court={convertPadelCourtToCourt(court, court.distance)}
               />
             ))}
           </div>

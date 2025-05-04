@@ -7,7 +7,7 @@ import LocationFilter from "@/components/LocationFilter";
 import { Button } from "@/components/ui/button";
 import { MapPin, List, Filter } from "lucide-react";
 import { courts } from "@/data/courtsData";
-import { PadelCourt } from "@/types";
+import { PadelCourt, convertPadelCourtToCourt } from "@/types";
 import { useLanguage } from "@/context/LanguageContext";
 
 const Courts = () => {
@@ -161,7 +161,7 @@ const Courts = () => {
                 view === "grid" ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredCourts.map((court) => (
-                      <CourtCard key={court.id} court={court} isArabic={isArabic} />
+                      <CourtCard key={court.id} court={convertPadelCourtToCourt(court)} />
                     ))}
                   </div>
                 ) : (
