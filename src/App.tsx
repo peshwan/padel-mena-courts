@@ -6,7 +6,6 @@ import Coaches from './pages/Coaches';
 import Courts from './pages/Courts';
 import HowToPlay from './pages/HowToPlay';
 import NotFound from './pages/NotFound';
-import CourtsNearMe from './pages/CourtsNearMe';
 import { LanguageProvider } from './context/LanguageContext';
 import { Toaster } from './components/ui/toaster';
 
@@ -21,7 +20,6 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/coaches" element={<Coaches />} />
           <Route path="/courts" element={<Courts />} />
-          <Route path="/courts-near-me" element={<CourtsNearMe />} />
           <Route path="/how-to-play" element={<HowToPlay />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

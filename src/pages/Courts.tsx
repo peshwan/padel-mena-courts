@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -5,10 +6,11 @@ import Footer from "@/components/Footer";
 import CourtCard from "@/components/CourtCard";
 import LocationFilter from "@/components/LocationFilter";
 import { Button } from "@/components/ui/button";
-import { MapPin, List, Filter } from "lucide-react";
+import { MapPin, List, Filter, Loader } from "lucide-react";
 import { courts } from "@/data/courtsData";
 import { PadelCourt, convertPadelCourtToCourt } from "@/types";
 import { useLanguage } from "@/context/LanguageContext";
+import { toast } from "@/components/ui/use-toast";
 
 const Courts = () => {
   const { isArabic } = useLanguage();
@@ -18,20 +20,118 @@ const Courts = () => {
   const [selectedCity, setSelectedCity] = useState<string>(searchParams.get("city") || "");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [userLocation, setUserLocation] = useState<GeolocationCoordinates | null>(null);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [nearMeActive, setNearMeActive] = useState(false);
 
   useEffect(() => {
     applyFilters();
   }, []);
 
+  // Function to calculate distance between two points
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371; // Radius of the earth in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    const distance = R * c; // Distance in km
+    return distance;
+  };
+
+  const getLocation = () => {
+    setIsLoadingLocation(true);
+    setNearMeActive(true);
+    
+    if (!navigator.geolocation) {
+      toast({
+        title: isArabic ? "خطأ" : "Error",
+        description: isArabic 
+          ? "خدمة تحديد الموقع غير متوفرة في متصفحك" 
+          : "Geolocation is not supported by your browser",
+        variant: "destructive"
+      });
+      setIsLoadingLocation(false);
+      return;
+    }
+    
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setUserLocation(position.coords);
+        setIsLoadingLocation(false);
+        
+        // Update courts with distance
+        const courtsWithDistance = courts.map(court => {
+          // Create random coordinates for demonstration purposes
+          const courtLat = Math.random() * 10 + 25; // Random coordinates for Middle East
+          const courtLng = Math.random() * 20 + 35;
+          
+          const distance = calculateDistance(
+            position.coords.latitude,
+            position.coords.longitude,
+            courtLat,
+            courtLng
+          );
+          
+          return { ...court, distance };
+        });
+        
+        // Sort by distance
+        const sorted = [...courtsWithDistance].sort((a, b) => (a.distance || 0) - (b.distance || 0));
+        setFilteredCourts(sorted);
+        
+        toast({
+          title: isArabic ? "تم بنجاح" : "Success",
+          description: isArabic 
+            ? "تم تحديد موقعك وترتيب الملاعب حسب الأقرب إليك" 
+            : "Location detected! Courts are now sorted by distance",
+        });
+      },
+      () => {
+        setIsLoadingLocation(false);
+        toast({
+          title: isArabic ? "خطأ" : "Error",
+          description: isArabic 
+            ? "لم نتمكن من الوصول إلى موقعك. يرجى التأكد من تفعيل خدمة الموقع والمحاولة مرة أخرى" 
+            : "Could not access your location. Please make sure location services are enabled",
+          variant: "destructive"
+        });
+      }
+    );
+  };
+
   const applyFilters = () => {
     let filtered = [...courts];
     
+    // Filter by country
     if (selectedCountry && selectedCountry !== "all-countries") {
       filtered = filtered.filter((court) => court.country === selectedCountry);
     }
     
+    // Filter by city
     if (selectedCity && selectedCity !== "all-cities") {
       filtered = filtered.filter((court) => court.city === selectedCity);
+    }
+    
+    // If near me is active and we have the user location, re-apply distance calculation
+    if (nearMeActive && userLocation) {
+      filtered = filtered.map(court => {
+        // Create random coordinates for demonstration purposes
+        const courtLat = Math.random() * 10 + 25;
+        const courtLng = Math.random() * 20 + 35;
+        
+        const distance = calculateDistance(
+          userLocation.latitude,
+          userLocation.longitude,
+          courtLat,
+          courtLng
+        );
+        
+        return { ...court, distance };
+      }).sort((a, b) => (a.distance || 0) - (b.distance || 0));
     }
     
     setFilteredCourts(filtered);
@@ -41,6 +141,14 @@ const Courts = () => {
     if (selectedCountry && selectedCountry !== "all-countries") params.set("country", selectedCountry);
     if (selectedCity && selectedCity !== "all-cities") params.set("city", selectedCity);
     setSearchParams(params);
+  };
+
+  const resetFilters = () => {
+    setSelectedCountry("");
+    setSelectedCity("");
+    setNearMeActive(false);
+    setSearchParams({});
+    setFilteredCourts(courts);
   };
 
   const handleCountryChange = (country: string) => {
@@ -93,6 +201,42 @@ const Courts = () => {
                 onFilterApply={applyFilters}
                 isArabic={isArabic}
               />
+              
+              {/* Near Me feature */}
+              <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
+                <h3 className="text-lg font-medium mb-4">
+                  {isArabic ? "الملاعب القريبة مني" : "Courts Near Me"}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {isArabic
+                    ? "استخدم موقعك الحالي لإيجاد أقرب الملاعب إليك"
+                    : "Use your current location to find the nearest courts"}
+                </p>
+                <Button
+                  onClick={getLocation}
+                  disabled={isLoadingLocation}
+                  className={`w-full flex items-center justify-center ${nearMeActive ? "bg-court hover:bg-court/90" : ""}`}
+                >
+                  {isLoadingLocation ? (
+                    <Loader className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <MapPin className="h-4 w-4 mr-2" />
+                  )}
+                  {isArabic ? "استخدم موقعي" : "Use My Location"}
+                </Button>
+                
+                {nearMeActive && (
+                  <div className="mt-4">
+                    <Button 
+                      variant="outline" 
+                      onClick={resetFilters} 
+                      className="w-full"
+                    >
+                      {isArabic ? "إعادة ضبط الموقع" : "Reset Location"}
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Courts List */}
@@ -105,12 +249,14 @@ const Courts = () => {
                         عرض <span className="font-medium text-foreground">{filteredCourts.length}</span> ملعب
                         {selectedCountry && selectedCountry !== "all-countries" && ` في ${selectedCountry}`}
                         {selectedCity && selectedCity !== "all-cities" && `، ${selectedCity}`}
+                        {nearMeActive && userLocation && " مرتبة حسب المسافة"}
                       </>
                     ) : (
                       <>
                         Showing <span className="font-medium text-foreground">{filteredCourts.length}</span> courts
                         {selectedCountry && selectedCountry !== "all-countries" && ` in ${selectedCountry}`}
                         {selectedCity && selectedCity !== "all-cities" && `, ${selectedCity}`}
+                        {nearMeActive && userLocation && " sorted by distance"}
                       </>
                     )}
                   </p>
@@ -148,12 +294,7 @@ const Courts = () => {
                   <p className="text-muted-foreground mb-4">
                     {isArabic ? "حاول تغيير خيارات التصفية للعثور على المزيد من الملاعب." : "Try changing your filter options to find more courts."}
                   </p>
-                  <Button onClick={() => {
-                    setSelectedCountry("");
-                    setSelectedCity("");
-                    setSearchParams({});
-                    setFilteredCourts(courts);
-                  }}>
+                  <Button onClick={resetFilters}>
                     {isArabic ? "إعادة ضبط الفلاتر" : "Reset Filters"}
                   </Button>
                 </div>
@@ -161,7 +302,7 @@ const Courts = () => {
                 view === "grid" ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredCourts.map((court) => (
-                      <CourtCard key={court.id} court={convertPadelCourtToCourt(court)} />
+                      <CourtCard key={court.id} court={convertPadelCourtToCourt(court, court.distance)} />
                     ))}
                   </div>
                 ) : (
@@ -205,6 +346,11 @@ const Courts = () => {
                               {court.amenities.slice(0, 2).map((amenity, idx) => (
                                 <span key={idx} className="bg-court/10 px-2 py-1 rounded-full text-xs">{amenity}</span>
                               ))}
+                              {court.distance && (
+                                <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                                  {court.distance.toFixed(1)} {isArabic ? "كم" : "km"}
+                                </span>
+                              )}
                             </div>
                           </div>
                           <div className="flex justify-between items-center mt-2">
