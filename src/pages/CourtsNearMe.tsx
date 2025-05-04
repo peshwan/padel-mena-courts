@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -135,7 +136,7 @@ const CourtsNearMe = () => {
             {(status === "success" ? nearbyCourts : sortedCourts).map((court) => (
               <CourtCard 
                 key={court.id} 
-                court={convertPadelCourtToCourt(court, court.distance)}
+                court={convertPadelCourtToCourt(court)}
               />
             ))}
           </div>

@@ -34,6 +34,7 @@ export interface PadelCourt {
     weekdays: string;
     weekends: string;
   };
+  distance?: number;
 }
 
 export interface Court {
@@ -72,6 +73,22 @@ export interface Court {
     website?: string;
   };
   distance?: number;
+}
+
+export interface Coach {
+  id: string;
+  name: string;
+  image: string;
+  country: Country;
+  city: string;
+  bio: string;
+  experience: number;
+  rating: number;
+  specialties: string[];
+  availableForPrivateLessons: boolean;
+  pricePerHour?: number;
+  contactPhone?: string;
+  contactEmail?: string;
 }
 
 // Utility function to convert PadelCourt to Court
@@ -114,6 +131,6 @@ export function convertPadelCourtToCourt(padelCourt: PadelCourt, distance?: numb
       email: padelCourt.contactEmail,
       website: padelCourt.website,
     },
-    distance: distance,
+    distance: padelCourt.distance || distance,
   };
 }
