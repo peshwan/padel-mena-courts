@@ -1,7 +1,8 @@
+
 #root {
-  max-width: 1280px;
+  max-width: 100%;  /* Changed from 1280px to make it full width */
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0;  /* Removed padding */
   text-align: center;
 }
 
@@ -39,4 +40,13 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* Added for phone number formatting */
+.direction-ltr {
+  direction: ltr;
+}
+
+.unicode-bidi-override {
+  unicode-bidi: plaintext;
 }

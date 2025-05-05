@@ -21,14 +21,25 @@ const CourtCard = ({ court }: CourtCardProps) => {
     window.open(mapUrl, '_blank');
   };
   
-  // Format phone number for display
+  // Improved phone number formatting
   const formatPhoneNumber = (phone: string) => {
     if (!phone) return '';
     
-    // Format phone number with RTL/LTR markers for proper display in both languages
-    return isArabic 
-      ? `\u200F${phone}\u200F` // RTL mark before and after for Arabic
-      : `\u200E${phone}\u200E`; // LTR mark before and after for English
+    // Strip any formatting characters first to get clean digits
+    const digitsOnly = phone.replace(/\D/g, '');
+    
+    // Format based on language direction
+    if (isArabic) {
+      // In Arabic (RTL), ensure phone number is displayed correctly with proper direction
+      return (
+        <bdi className="unicode-bidi-override direction-ltr inline-block">
+          {phone}
+        </bdi>
+      );
+    } else {
+      // In English (LTR), display normally
+      return phone;
+    }
   };
   
   return (
