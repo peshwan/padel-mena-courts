@@ -12,6 +12,7 @@ import { toast } from "@/components/ui/use-toast";
 import { loadAllCourts, getCountries, getCitiesByCountry } from "@/utils/courtUtils";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
+// Update the courts per page to 12
 const COURTS_PER_PAGE = 12;
 
 const Courts = () => {
@@ -198,7 +199,7 @@ const Courts = () => {
       <Navbar />
 
       <main className="flex-grow bg-gray-50 py-8">
-        <div className="container-custom">
+        <div className="container max-w-[1400px] px-4 mx-auto"> {/* Updated container to be wider */}
           {/* Page Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">
@@ -272,7 +273,7 @@ const Courts = () => {
               </div>
             </div>
 
-            {/* Courts List */}
+            {/* Courts List - Updated grid for wider layout */}
             <div className="md:col-span-3">
               <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
                 <div className="flex justify-between items-center">
@@ -334,7 +335,7 @@ const Courts = () => {
               ) : (
                 <>
                   {view === "grid" ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8"> {/* Updated grid to show 4 cards per row on extra large screens */}
                       {currentCourts.map((court) => (
                         <CourtCard key={court.id} court={court} />
                       ))}

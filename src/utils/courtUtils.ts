@@ -1,34 +1,50 @@
-
+import { City, Country, Court } from "@/types";
 import { saudiArabiaCourts } from "@/data/countries/saudiArabia";
-import { Court } from "@/types";
-import { GoogleCourt, convertGoogleCourtToCourt } from "@/types/CourtTypes";
+import { convertGoogleCourtToCourt } from "@/types/CourtTypes";
 
-// Load all courts from different country files
 export const loadAllCourts = (): Court[] => {
-  const allGoogleCourts: GoogleCourt[] = [
-    ...saudiArabiaCourts,
-    // Add other country imports here as they become available
-    // ...uaeCourts,
-    // ...kuwaitCourts,
-  ];
+  // Convert all Saudi Arabia courts
+  const saudiCourts = saudiArabiaCourts.map(court => convertGoogleCourtToCourt(court));
   
-  // Convert all Google courts to our Court format
-  return allGoogleCourts.map(googleCourt => convertGoogleCourtToCourt(googleCourt));
+  // You can add more court data from other countries here
+  // const uaeCourts = uaeCourts.map(court => convertGoogleCourtToCourt(court));
+  
+  // For now, we're just using the Saudi Arabia courts
+  return saudiCourts;
 };
 
-// Get unique countries from courts data
-export const getCountries = (courts: Court[]): string[] => {
-  return [...new Set(courts.map(court => court.location.country))].sort();
+export const getCountries = (): Country[] => {
+  return ['Saudi Arabia', 'UAE', 'Kuwait', 'Qatar', 'Oman', 'Egypt', 'Tunisia'];
 };
 
-// Get cities by country
-export const getCitiesByCountry = (courts: Court[], country: string): string[] => {
-  return [...new Set(courts
-    .filter(court => court.location.country === country)
-    .map(court => court.location.city))].sort();
-};
+export const getCitiesByCountry = (country: Country): City[] => {
+  const cities: Record<Country, City[]> = {
+    'Saudi Arabia': [
+      { id: 'dammam', name: 'Dammam', country: 'Saudi Arabia' },
+      { id: 'riyadh', name: 'Riyadh', country: 'Saudi Arabia' },
+      { id: 'khobar', name: 'Khobar', country: 'Saudi Arabia' },
+      { id: 'dhahran', name: 'Dhahran', country: 'Saudi Arabia' },
+    ],
+    'UAE': [
+      { id: 'dubai', name: 'Dubai', country: 'UAE' },
+      { id: 'abu-dhabi', name: 'Abu Dhabi', country: 'UAE' },
+    ],
+    'Kuwait': [
+      { id: 'kuwait-city', name: 'Kuwait City', country: 'Kuwait' },
+    ],
+    'Qatar': [
+      { id: 'doha', name: 'Doha', country: 'Qatar' },
+    ],
+    'Oman': [
+      { id: 'muscat', name: 'Muscat', country: 'Oman' },
+    ],
+    'Egypt': [
+      { id: 'cairo', name: 'Cairo', country: 'Egypt' },
+    ],
+    'Tunisia': [
+      { id: 'tunis', name: 'Tunis', country: 'Tunisia' },
+    ],
+  };
 
-// Get all cities
-export const getAllCities = (courts: Court[]): string[] => {
-  return [...new Set(courts.map(court => court.location.city))].sort();
+  return cities[country] || [];
 };

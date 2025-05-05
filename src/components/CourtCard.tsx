@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { MapPin, Star, Clock, Phone, Globe } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,10 +8,7 @@ import { Court } from "@/types";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface CourtCardProps {
-  court: Court & {
-    distance?: number;
-    mapUrl?: string;
-  };
+  court: Court;
 }
 
 const CourtCard = ({ court }: CourtCardProps) => {
@@ -27,11 +25,10 @@ const CourtCard = ({ court }: CourtCardProps) => {
   const formatPhoneNumber = (phone: string) => {
     if (!phone) return '';
     
-    // For Arabic, we keep the phone number as is
-    if (isArabic) return phone;
-    
-    // For English, we keep the international format
-    return phone;
+    // Format phone number with RTL/LTR markers for proper display in both languages
+    return isArabic 
+      ? `\u200F${phone}\u200F` // RTL mark before and after for Arabic
+      : `\u200E${phone}\u200E`; // LTR mark before and after for English
   };
   
   return (
