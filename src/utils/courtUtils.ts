@@ -1,20 +1,32 @@
+
 import { City, Country, Court } from "@/types";
-import { saudiArabiaCourts } from "@/data/countries/saudiArabia";
 import { convertGoogleCourtToCourt } from "@/types/CourtTypes";
+import { allCourts, saudiArabiaCourts, egyptCourts, qatarCourts, kuwaitCourts, uaeCourts, tunisCourts, bahrainCourts } from "@/data/countries";
 
 export const loadAllCourts = (): Court[] => {
-  // Convert all Saudi Arabia courts
-  const saudiCourts = saudiArabiaCourts.map(court => convertGoogleCourtToCourt(court));
+  // Convert courts from all countries
+  const convertedCourts = [
+    ...saudiArabiaCourts.map(court => convertGoogleCourtToCourt(court)),
+    ...egyptCourts.map(court => convertGoogleCourtToCourt(court)),
+    ...qatarCourts.map(court => convertGoogleCourtToCourt(court)),
+    ...kuwaitCourts.map(court => convertGoogleCourtToCourt(court)),
+    ...uaeCourts.map(court => convertGoogleCourtToCourt(court)),
+    ...tunisCourts.map(court => convertGoogleCourtToCourt(court)),
+    ...bahrainCourts.map(court => convertGoogleCourtToCourt(court))
+  ];
   
-  // You can add more court data from other countries here
-  // const uaeCourts = uaeCourts.map(court => convertGoogleCourtToCourt(court));
-  
-  // For now, we're just using the Saudi Arabia courts
-  return saudiCourts;
+  return convertedCourts;
+};
+
+export const loadCountryCourts = (country: Country): Court[] => {
+  // Get courts for specific country and convert them
+  const countryCourts = allCourts[country] || [];
+  return countryCourts.map(court => convertGoogleCourtToCourt(court));
 };
 
 export const getCountries = (): Country[] => {
-  return ['Saudi Arabia', 'UAE', 'Kuwait', 'Qatar', 'Oman', 'Egypt', 'Tunisia'];
+  // Update to include Bahrain
+  return ['Saudi Arabia', 'UAE', 'Kuwait', 'Qatar', 'Oman', 'Egypt', 'Tunisia', 'Bahrain'];
 };
 
 export const getCitiesByCountry = (country: Country): City[] => {
@@ -43,6 +55,9 @@ export const getCitiesByCountry = (country: Country): City[] => {
     ],
     'Tunisia': [
       { id: 'tunis', name: 'Tunis', country: 'Tunisia' },
+    ],
+    'Bahrain': [
+      { id: 'manama', name: 'Manama', country: 'Bahrain' },
     ],
   };
 

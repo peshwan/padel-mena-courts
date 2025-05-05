@@ -5,7 +5,8 @@ export type Country =
   | 'Qatar' 
   | 'Oman' 
   | 'Egypt' 
-  | 'Tunisia';
+  | 'Tunisia'
+  | 'Bahrain';
 
 export interface City {
   id: string;
