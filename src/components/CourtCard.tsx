@@ -17,7 +17,7 @@ const CourtCard = ({ court }: CourtCardProps) => {
   const { isArabic } = useLanguage();
   
   const handleMapView = () => {
-    window.open(`https://maps.google.com/?q=${encodeURIComponent(court.location.address + ', ' + court.location.city + ', ' + court.location.country)}`, '_blank');
+    window.open(`https://maps.google.com/?q=${encodeURIComponent(court.location.city + ', ' + court.location.country)}`, '_blank');
   };
   
   return (
@@ -61,22 +61,22 @@ const CourtCard = ({ court }: CourtCardProps) => {
               {isArabic ? `${court.hours.openAr} - ${court.hours.closeAr}` : `${court.hours.open} - ${court.hours.close}`}
             </span>
           </div>
-          {court.phone && (
+          {court.contact?.phone && (
             <div className="flex items-center text-muted-foreground mb-2">
               <Phone size={16} className="mr-1" />
-              <span className="text-sm">{court.phone}</span>
+              <span className="text-sm">{court.contact.phone}</span>
             </div>
           )}
-          {court.website && (
+          {court.contact?.website && (
             <div className="flex items-center text-muted-foreground mb-3">
               <Globe size={16} className="mr-1" />
               <a 
-                href={court.website} 
+                href={court.contact.website} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-sm text-blue-500 hover:underline truncate"
               >
-                {court.website.replace(/^https?:\/\//, '')}
+                {court.contact.website.replace(/^https?:\/\//, '')}
               </a>
             </div>
           )}
