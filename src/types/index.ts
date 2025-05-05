@@ -1,5 +1,3 @@
-
-
 export type Country = 
   | 'Saudi Arabia' 
   | 'UAE' 
@@ -74,6 +72,7 @@ export interface Court {
     website?: string;
   };
   distance?: number;
+  mapUrl?: string; // Add this property
 }
 
 export interface Coach {

@@ -1,4 +1,3 @@
-
 // New court type based on the Google Places JSON format
 export interface GoogleCourt {
   address: string;

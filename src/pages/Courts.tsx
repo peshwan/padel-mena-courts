@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -6,7 +5,7 @@ import Footer from "@/components/Footer";
 import CourtCard from "@/components/CourtCard";
 import LocationFilter from "@/components/LocationFilter";
 import { Button } from "@/components/ui/button";
-import { MapPin, List, Filter, Loader } from "lucide-react";
+import { MapPin, List, Filter, Loader, Star, Clock, Phone } from "lucide-react";
 import { Court } from "@/types";
 import { useLanguage } from "@/context/LanguageContext";
 import { toast } from "@/components/ui/use-toast";
