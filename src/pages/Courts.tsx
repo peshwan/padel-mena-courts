@@ -7,15 +7,19 @@ import CourtCard from "@/components/CourtCard";
 import LocationFilter from "@/components/LocationFilter";
 import { Button } from "@/components/ui/button";
 import { MapPin, List, Filter, Loader } from "lucide-react";
-import { courts } from "@/data/courtsData";
-import { PadelCourt, convertPadelCourtToCourt } from "@/types";
+import { Court } from "@/types";
 import { useLanguage } from "@/context/LanguageContext";
 import { toast } from "@/components/ui/use-toast";
+import { loadAllCourts, getCountries, getCitiesByCountry } from "@/utils/courtUtils";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+
+const COURTS_PER_PAGE = 12;
 
 const Courts = () => {
   const { isArabic } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [filteredCourts, setFilteredCourts] = useState<PadelCourt[]>(courts);
+  const [allCourts, setAllCourts] = useState<Court[]>([]);
+  const [filteredCourts, setFilteredCourts] = useState<Court[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>(searchParams.get("country") || "");
   const [selectedCity, setSelectedCity] = useState<string>(searchParams.get("city") || "");
   const [view, setView] = useState<"grid" | "list">("grid");
@@ -23,10 +27,31 @@ const Courts = () => {
   const [userLocation, setUserLocation] = useState<GeolocationCoordinates | null>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [nearMeActive, setNearMeActive] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(filteredCourts.length / COURTS_PER_PAGE);
+  
+  // Current page courts
+  const currentCourts = filteredCourts.slice(
+    (currentPage - 1) * COURTS_PER_PAGE,
+    currentPage * COURTS_PER_PAGE
+  );
 
   useEffect(() => {
-    applyFilters();
+    // Load courts data
+    const courts = loadAllCourts();
+    setAllCourts(courts);
+    setFilteredCourts(courts);
+    
+    // Apply any filters from URL
+    applyFilters(courts);
   }, []);
+  
+  useEffect(() => {
+    // Reset to first page when filters change
+    setCurrentPage(1);
+  }, [filteredCourts]);
 
   // Function to calculate distance between two points
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -64,7 +89,7 @@ const Courts = () => {
         setIsLoadingLocation(false);
         
         // Update courts with distance
-        const courtsWithDistance = courts.map(court => {
+        const courtsWithDistance = allCourts.map(court => {
           // Create random coordinates for demonstration purposes
           const courtLat = Math.random() * 10 + 25; // Random coordinates for Middle East
           const courtLng = Math.random() * 20 + 35;
@@ -103,17 +128,17 @@ const Courts = () => {
     );
   };
 
-  const applyFilters = () => {
-    let filtered = [...courts];
+  const applyFilters = (courtsData = allCourts) => {
+    let filtered = [...courtsData];
     
     // Filter by country
     if (selectedCountry && selectedCountry !== "all-countries") {
-      filtered = filtered.filter((court) => court.country === selectedCountry);
+      filtered = filtered.filter((court) => court.location.country === selectedCountry);
     }
     
     // Filter by city
     if (selectedCity && selectedCity !== "all-cities") {
-      filtered = filtered.filter((court) => court.city === selectedCity);
+      filtered = filtered.filter((court) => court.location.city === selectedCity);
     }
     
     // If near me is active and we have the user location, re-apply distance calculation
@@ -148,7 +173,7 @@ const Courts = () => {
     setSelectedCity("");
     setNearMeActive(false);
     setSearchParams({});
-    setFilteredCourts(courts);
+    setFilteredCourts(allCourts);
   };
 
   const handleCountryChange = (country: string) => {
@@ -158,6 +183,15 @@ const Courts = () => {
 
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
+  };
+  
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to top when changing pages
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
   };
 
   return (
@@ -198,7 +232,7 @@ const Courts = () => {
                 selectedCity={selectedCity}
                 onCountryChange={handleCountryChange}
                 onCityChange={setSelectedCity}
-                onFilterApply={applyFilters}
+                onFilterApply={() => applyFilters()}
                 isArabic={isArabic}
               />
               
@@ -299,76 +333,155 @@ const Courts = () => {
                   </Button>
                 </div>
               ) : (
-                view === "grid" ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredCourts.map((court) => (
-                      <CourtCard key={court.id} court={convertPadelCourtToCourt(court, court.distance)} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {filteredCourts.map((court) => (
-                      <div key={court.id} className="bg-white rounded-lg shadow-sm border overflow-hidden flex flex-col sm:flex-row">
-                        <div className="sm:w-1/3">
-                          <img
-                            src={court.image}
-                            alt={court.name}
-                            className="w-full h-48 sm:h-full object-cover"
-                          />
-                        </div>
-                        <div className="p-4 sm:w-2/3 flex flex-col justify-between">
-                          <div>
-                            <div className="flex justify-between items-start mb-2">
-                              <h3 className="text-xl font-bold">{court.name}</h3>
-                              <div className="flex items-center bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#f59e0b" className="w-4 h-4 mr-1">
-                                  <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                                </svg>
-                                <span className="font-medium">{court.rating}</span>
+                <>
+                  {view === "grid" ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                      {currentCourts.map((court) => (
+                        <CourtCard key={court.id} court={court} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-4 mb-8">
+                      {currentCourts.map((court) => (
+                        <div key={court.id} className="bg-white rounded-lg shadow-sm border overflow-hidden flex flex-col sm:flex-row">
+                          <div className="sm:w-1/3">
+                            <img
+                              src={court.images[0]}
+                              alt={court.name}
+                              className="w-full h-48 sm:h-full object-cover"
+                            />
+                          </div>
+                          <div className="p-4 sm:w-2/3 flex flex-col justify-between">
+                            <div>
+                              <div className="flex justify-between items-start mb-2">
+                                <h3 className="text-xl font-bold">{isArabic ? court.nameAr : court.name}</h3>
+                                <div className="flex items-center bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-sm">
+                                  <Star className="h-4 w-4 mr-1 text-yellow-500" />
+                                  <span className="font-medium">{court.rating}</span>
+                                </div>
                               </div>
-                            </div>
-                            <div className="flex items-center text-muted-foreground mb-2">
-                              <MapPin className="h-4 w-4 mr-1" />
-                              <span>
-                                {isArabic ? `${court.country}، ${court.city}` : `${court.city}, ${court.country}`}
-                              </span>
-                            </div>
-                            <p className="text-sm mb-4 line-clamp-2">{court.description}</p>
-                            <div className="flex flex-wrap gap-1 mb-3">
-                              <span className="bg-sand/10 px-2 py-1 rounded-full text-xs">
-                                {isArabic ? `${court.numberOfCourts} ملعب` : `${court.numberOfCourts} Courts`}
-                              </span>
-                              <span className="bg-teal/10 px-2 py-1 rounded-full text-xs">
-                                {court.indoor ? 
-                                  (isArabic ? 'داخلي' : 'Indoor') : 
-                                  (isArabic ? 'خارجي' : 'Outdoor')}
-                              </span>
-                              {court.amenities.slice(0, 2).map((amenity, idx) => (
-                                <span key={idx} className="bg-court/10 px-2 py-1 rounded-full text-xs">{amenity}</span>
-                              ))}
+                              <div className="flex items-center text-muted-foreground mb-2">
+                                <MapPin className="h-4 w-4 mr-1" />
+                                <span>
+                                  {isArabic ? court.locationAr : `${court.location.city}, ${court.location.country}`}
+                                </span>
+                              </div>
+                              <div className="flex items-center text-muted-foreground mb-2">
+                                <Clock className="h-4 w-4 mr-1" />
+                                <span className="text-sm">
+                                  {isArabic ? `${court.hours.openAr} - ${court.hours.closeAr}` : `${court.hours.open} - ${court.hours.close}`}
+                                </span>
+                              </div>
+                              {court.contact?.phone && (
+                                <div className="flex items-center text-muted-foreground mb-2">
+                                  <Phone className="h-4 w-4 mr-1" />
+                                  <span className="text-sm">{court.contact.phone}</span>
+                                </div>
+                              )}
+                              <p className="text-sm mb-4 line-clamp-2">{isArabic ? court.descriptionAr : court.description}</p>
                               {court.distance && (
                                 <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
                                   {court.distance.toFixed(1)} {isArabic ? "كم" : "km"}
                                 </span>
                               )}
                             </div>
-                          </div>
-                          <div className="flex justify-between items-center mt-2">
-                            <p className="font-medium">
-                              <span className="text-court">${court.pricePerHour}</span> {isArabic ? "/ ساعة" : "/ hour"}
-                            </p>
-                            <Button 
-                              className="bg-court hover:bg-court-dark"
-                              onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(court.address + ', ' + court.city + ', ' + court.country)}`, '_blank')}
-                            >
-                              {isArabic ? "عرض على الخريطة" : "View on Map"}
-                            </Button>
+                            <div className="flex justify-end mt-2">
+                              <Button 
+                                className="bg-court hover:bg-court-dark"
+                                onClick={() => {
+                                  const mapUrl = court.mapUrl || 
+                                    `https://maps.google.com/?q=${encodeURIComponent(court.location.city + ', ' + court.location.country)}`;
+                                  window.open(mapUrl, '_blank');
+                                }}
+                              >
+                                {isArabic ? "عرض على الخريطة" : "View on Map"}
+                              </Button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <Pagination className="my-8">
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious 
+                            onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+                            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                        
+                        {/* First page */}
+                        {currentPage > 3 && (
+                          <PaginationItem>
+                            <PaginationLink onClick={() => handlePageChange(1)}>1</PaginationLink>
+                          </PaginationItem>
+                        )}
+                        
+                        {/* Ellipsis */}
+                        {currentPage > 4 && (
+                          <PaginationItem>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                        )}
+                        
+                        {/* Pages around current page */}
+                        {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                          let pageNum;
+                          
+                          if (totalPages <= 5) {
+                            pageNum = i + 1;
+                          } else if (currentPage <= 3) {
+                            pageNum = i + 1;
+                          } else if (currentPage >= totalPages - 2) {
+                            pageNum = totalPages - 4 + i;
+                          } else {
+                            pageNum = currentPage - 2 + i;
+                          }
+                          
+                          if (pageNum <= 0 || pageNum > totalPages) return null;
+                          
+                          return (
+                            <PaginationItem key={pageNum}>
+                              <PaginationLink 
+                                isActive={currentPage === pageNum}
+                                onClick={() => handlePageChange(pageNum)}
+                              >
+                                {pageNum}
+                              </PaginationLink>
+                            </PaginationItem>
+                          );
+                        })}
+                        
+                        {/* Ellipsis */}
+                        {currentPage < totalPages - 3 && (
+                          <PaginationItem>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                        )}
+                        
+                        {/* Last page */}
+                        {currentPage < totalPages - 2 && (
+                          <PaginationItem>
+                            <PaginationLink onClick={() => handlePageChange(totalPages)}>
+                              {totalPages}
+                            </PaginationLink>
+                          </PaginationItem>
+                        )}
+                        
+                        <PaginationItem>
+                          <PaginationNext 
+                            onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
+                            className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  )}
+                </>
               )}
             </div>
           </div>

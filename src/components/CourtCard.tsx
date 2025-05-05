@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { MapPin, Star, Clock, Phone, Globe } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,6 +9,7 @@ import { useLanguage } from "@/context/LanguageContext";
 interface CourtCardProps {
   court: Court & {
     distance?: number;
+    mapUrl?: string;
   };
 }
 
@@ -17,7 +17,21 @@ const CourtCard = ({ court }: CourtCardProps) => {
   const { isArabic } = useLanguage();
   
   const handleMapView = () => {
-    window.open(`https://maps.google.com/?q=${encodeURIComponent(court.location.city + ', ' + court.location.country)}`, '_blank');
+    // Use the direct map URL if available, otherwise construct one
+    const mapUrl = court.mapUrl || 
+      `https://maps.google.com/?q=${encodeURIComponent(court.location.city + ', ' + court.location.country)}`;
+    window.open(mapUrl, '_blank');
+  };
+  
+  // Format phone number for display
+  const formatPhoneNumber = (phone: string) => {
+    if (!phone) return '';
+    
+    // For Arabic, we keep the phone number as is
+    if (isArabic) return phone;
+    
+    // For English, we keep the international format
+    return phone;
   };
   
   return (
@@ -64,7 +78,7 @@ const CourtCard = ({ court }: CourtCardProps) => {
           {court.contact?.phone && (
             <div className="flex items-center text-muted-foreground mb-2">
               <Phone size={16} className="mr-1" />
-              <span className="text-sm">{court.contact.phone}</span>
+              <span className="text-sm">{formatPhoneNumber(court.contact.phone)}</span>
             </div>
           )}
           {court.contact?.website && (
